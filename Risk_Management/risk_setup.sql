@@ -1736,7 +1736,7 @@ AS (
 
 CREATE OR REPLACE AGENT RISK_MANAGEMENT_AGENT
   COMMENT = '信用リスク管理AIアシスタント - 内部リスク指標（EL/UL）・規制資本（RWA）の分析およびリスク管理ドキュメント検索を自然言語で実行'
-  PROFILE = '{"display_name": "信用リスク管理アシスタント", "color": "blue"}'
+  PROFILE = '{"display_name": "Risk Management Assistant", "color": "blue"}'
   FROM SPECIFICATION
   $$
   models:
