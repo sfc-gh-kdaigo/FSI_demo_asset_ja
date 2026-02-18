@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnowBank リスク管理 ER図</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #29b5e8;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #666;
+            text-align: center;
+            font-weight: normal;
+            margin-top: 0;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        .legend {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .legend h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .legend-item {
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            border-left: 4px solid #29b5e8;
+        }
+        .legend-item.dim {
+            border-left-color: #4CAF50;
+        }
+        .legend-item.fact {
+            border-left-color: #2196F3;
+        }
+        .legend-item.doc {
+            border-left-color: #FF9800;
+        }
+        .legend-item h4 {
+            margin: 0 0 10px 0;
+            color: #29b5e8;
+        }
+        .legend-item.dim h4 {
+            color: #4CAF50;
+        }
+        .legend-item.fact h4 {
+            color: #2196F3;
+        }
+        .legend-item.doc h4 {
+            color: #FF9800;
+        }
+        .legend-item p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .legend-item .count {
+            font-weight: bold;
+            color: #333;
+        }
+        .system-flow {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-radius: 8px;
+        }
+        .system-flow h3 {
+            color: #29b5e8;
+            margin-top: 0;
+        }
+        .formula-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff3e0;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+        }
+        .formula-box h3 {
+            color: #e65100;
+            margin-top: 0;
+        }
+        .formula {
+            font-family: 'Courier New', monospace;
+            background-color: #fff;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ffe0b2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 SnowBank リスク管理</h1>
+        <h2>Entity Relationship Diagram</h2>
+        
+        <div class="mermaid">
+erDiagram
+    DIM_RATING {
+        NUMBER RATING_KEY PK "格付サロゲートキー"
+        VARCHAR RATING_CODE "格付コード"
+        VARCHAR RATING_NAME "格付名"
+        NUMBER RATING_RANK "格付ランク"
+        NUMBER PD_LOWER "PD下限"
+        NUMBER PD_UPPER "PD上限"
+        NUMBER PD_CENTRAL "PD中央値"
+        VARCHAR EXTERNAL_RATING_SP "S&P格付"
+        VARCHAR EXTERNAL_RATING_MOODYS "Moodys格付"
+    }
+
+    DIM_INDUSTRY {
+        NUMBER INDUSTRY_KEY PK "業種サロゲートキー"
+        VARCHAR INDUSTRY_CODE "業種コード"
+        VARCHAR INDUSTRY_NAME "業種名"
+        VARCHAR INDUSTRY_CATEGORY "業種カテゴリ"
+        VARCHAR BOJ_INDUSTRY_CODE "日銀業種コード"
+        NUMBER RISK_WEIGHT_STANDARD "標準リスクウェイト"
+    }
+
+    DIM_DEPARTMENT {
+        NUMBER DEPARTMENT_KEY PK "部門サロゲートキー"
+        VARCHAR DEPARTMENT_CODE "部門コード"
+        VARCHAR DEPARTMENT_NAME "部門名"
+        VARCHAR DEPARTMENT_TYPE "部門種別"
+        VARCHAR PARENT_DEPARTMENT_CODE "親部門コード"
+        VARCHAR MANAGER_NAME "責任者名"
+        VARCHAR LOCATION "拠点"
+    }
+
+    DIM_PRODUCT {
+        NUMBER PRODUCT_KEY PK "商品サロゲートキー"
+        VARCHAR PRODUCT_CODE "商品コード"
+        VARCHAR PRODUCT_NAME "商品名"
+        VARCHAR PRODUCT_CATEGORY "商品カテゴリ"
+        VARCHAR EXPOSURE_CLASS "エクスポージャー区分"
+        NUMBER CCF "掛目(CCF)"
+        NUMBER LGD_STANDARD "標準LGD"
+    }
+
+    DIM_COUNTERPARTY {
+        NUMBER COUNTERPARTY_KEY PK "取引先サロゲートキー"
+        VARCHAR COUNTERPARTY_CODE "取引先コード"
+        VARCHAR COUNTERPARTY_NAME "取引先名"
+        VARCHAR COUNTERPARTY_TYPE "取引先区分"
+        NUMBER RATING_KEY FK "格付キー"
+        NUMBER INDUSTRY_KEY FK "業種キー"
+        NUMBER DEPARTMENT_KEY FK "担当部門キー"
+        NUMBER CAPITAL_AMOUNT "資本金"
+        NUMBER ANNUAL_SALES "年商"
+        VARCHAR PREFECTURE "都道府県"
+    }
+
+    FACT_LOAN_DETAIL {
+        NUMBER LOAN_KEY PK "貸出サロゲートキー"
+        VARCHAR LOAN_NUMBER "貸出番号"
+        NUMBER COUNTERPARTY_KEY FK "取引先キー"
+        NUMBER PRODUCT_KEY FK "商品キー"
+        NUMBER DEPARTMENT_KEY FK "部門キー"
+        NUMBER RATING_KEY FK "格付キー"
+        DATE BASE_DATE "基準日"
+        DATE LOAN_START_DATE "実行日"
+        DATE LOAN_MATURITY_DATE "期日"
+        NUMBER OUTSTANDING_AMOUNT "残高"
+        NUMBER UNDRAWN_AMOUNT "未実行額"
+        NUMBER INTEREST_RATE "金利"
+        VARCHAR COLLATERAL_TYPE "担保種類"
+        NUMBER COLLATERAL_VALUE "担保評価額"
+        VARCHAR GUARANTEE_TYPE "保証種類"
+        NUMBER GUARANTEE_VALUE "保証額"
+        VARCHAR EXPOSURE_CLASS "エクスポージャー区分"
+    }
+
+    FACT_INTERNAL_RISK {
+        NUMBER INTERNAL_RISK_KEY PK "内部リスクサロゲートキー"
+        NUMBER LOAN_KEY FK "貸出キー"
+        DATE BASE_DATE "基準日"
+        NUMBER EAD "EAD"
+        NUMBER PD "PD"
+        NUMBER LGD "LGD"
+        NUMBER MATURITY_YEARS "残存期間(年)"
+        NUMBER EL "期待損失(EL)"
+        NUMBER UL "非期待損失(UL)"
+        NUMBER ECONOMIC_CAPITAL "経済資本"
+        NUMBER RISK_CONTRIBUTION "リスク寄与度"
+        VARCHAR CALCULATION_METHOD "計算手法"
+    }
+
+    FACT_REGULATORY_RISK {
+        NUMBER REGULATORY_RISK_KEY PK "規制リスクサロゲートキー"
+        NUMBER LOAN_KEY FK "貸出キー"
+        DATE BASE_DATE "基準日"
+        NUMBER EAD "EAD"
+        NUMBER RISK_WEIGHT "リスクウェイト"
+        NUMBER RWA "RWA"
+        VARCHAR EXPOSURE_CLASS_REGULATORY "規制エクスポージャー区分"
+        VARCHAR APPROACH_TYPE "計算手法"
+        VARCHAR CRM_TYPE "CRM区分"
+        NUMBER CRM_VALUE "CRM額"
+        NUMBER K_IRB "K_IRB"
+        NUMBER SCALING_FACTOR "スケーリングファクター"
+    }
+
+    RISK_DOCUMENT {
+        VARCHAR DOCUMENT_ID PK "ドキュメントID"
+        VARCHAR TITLE "タイトル"
+        VARCHAR CONTENT "内容"
+        VARCHAR DOCUMENT_TYPE "ドキュメント種別"
+        VARCHAR CATEGORY "カテゴリ"
+        VARCHAR KEYWORDS "キーワード"
+        NUMBER VERSION "バージョン"
+    }
+
+    DIM_RATING ||--o{ DIM_COUNTERPARTY : "格付される"
+    DIM_INDUSTRY ||--o{ DIM_COUNTERPARTY : "属する"
+    DIM_DEPARTMENT ||--o{ DIM_COUNTERPARTY : "担当する"
+    DIM_COUNTERPARTY ||--o{ FACT_LOAN_DETAIL : "借入する"
+    DIM_PRODUCT ||--o{ FACT_LOAN_DETAIL : "利用する"
+    DIM_DEPARTMENT ||--o{ FACT_LOAN_DETAIL : "管理する"
+    DIM_RATING ||--o{ FACT_LOAN_DETAIL : "格付される"
+    FACT_LOAN_DETAIL ||--|| FACT_INTERNAL_RISK : "内部リスク計測"
+    FACT_LOAN_DETAIL ||--|| FACT_REGULATORY_RISK : "規制資本計算"
+        </div>
+
+        <div class="system-flow">
+            <h3>🔄 データフローとCortex Agent構成</h3>
+            <div class="mermaid">
+flowchart LR
+    subgraph 源泉システム
+        A[(勘定系<br/>貸出明細)]
+        B[(情報系<br/>格付・担保)]
+    end
+    
+    subgraph Snowflake SNOW_RISK
+        subgraph DATA Schema
+            C[(FACT_LOAN_DETAIL<br/>貸出明細)]
+            D[(FACT_INTERNAL_RISK<br/>内部リスク)]
+            E[(FACT_REGULATORY_RISK<br/>規制資本)]
+            F[(RISK_DOCUMENT<br/>規程・マニュアル)]
+        end
+        
+        subgraph AI Schema
+            G[SV_INTERNAL_RISK<br/>Semantic View]
+            H[SV_REGULATORY_RISK<br/>Semantic View]
+            I[RISK_DOCUMENTS_CSS<br/>Cortex Search]
+            J[🤖 RISK_MANAGEMENT<br/>_AGENT]
+        end
+    end
+    
+    subgraph 出力
+        K[📊 経営報告<br/>EL/UL分析]
+        L[📋 規制報告<br/>RWA計算]
+        M[📚 規程参照<br/>バーゼル解説]
+    end
+    
+    A --> C
+    B --> C
+    C --> D
+    C --> E
+    D --> G
+    E --> H
+    F --> I
+    G --> J
+    H --> J
+    I --> J
+    J --> K
+    J --> L
+    J --> M
+    
+    style J fill:#29b5e8,color:white
+    style G fill:#e3f2fd
+    style H fill:#e3f2fd
+    style I fill:#fff3e0
+        </div>
+        </div>
+
+        <div class="formula-box">
+            <h3>📐 主要計算式</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4 style="color: #2196F3;">内部リスク指標</h4>
+                    <div class="formula">EL = EAD × PD × LGD</div>
+                    <p style="font-size: 13px; color: #666;">期待損失 = エクスポージャー × デフォルト確率 × 損失率</p>
+                    <div class="formula">UL = EAD × LGD × √(PD×(1-PD)) × 2.33</div>
+                    <p style="font-size: 13px; color: #666;">非期待損失 = 99%VaRベースの計算</p>
+                </div>
+                <div>
+                    <h4 style="color: #4CAF50;">規制資本指標</h4>
+                    <div class="formula">RWA = EAD × Risk Weight</div>
+                    <p style="font-size: 13px; color: #666;">リスクアセット = エクスポージャー × リスクウェイト</p>
+                    <div class="formula">CAR = 自己資本 / RWA</div>
+                    <p style="font-size: 13px; color: #666;">自己資本比率 = 自己資本 / リスクアセット</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <h3>📊 テーブル説明</h3>
+            <div class="legend-grid">
+                <div class="legend-item dim">
+                    <h4>DIM_RATING（格付マスタ）</h4>
+                    <p>内部格付の定義。PDレンジ、外部格付（S&P、Moodys）との対応を管理。</p>
+                    <p class="count">想定件数: 15件（格付1〜15）</p>
+                </div>
+                <div class="legend-item dim">
+                    <h4>DIM_INDUSTRY（業種マスタ）</h4>
+                    <p>業種分類。日銀業種コードとの対応、標準リスクウェイトを保持。</p>
+                    <p class="count">想定件数: 30件</p>
+                </div>
+                <div class="legend-item dim">
+                    <h4>DIM_DEPARTMENT（部門マスタ）</h4>
+                    <p>営業部門・管理部門の階層構造。部門別リスク配賦の基礎。</p>
+                    <p class="count">想定件数: 20件</p>
+                </div>
+                <div class="legend-item dim">
+                    <h4>DIM_PRODUCT（商品マスタ）</h4>
+                    <p>貸出商品の定義。CCF（掛目）、標準LGD、エクスポージャー区分を保持。</p>
+                    <p class="count">想定件数: 30件</p>
+                </div>
+                <div class="legend-item dim">
+                    <h4>DIM_COUNTERPARTY（取引先マスタ）</h4>
+                    <p>法人・個人の取引先情報。格付、業種、担当部門との関連を管理。</p>
+                    <p class="count">想定件数: 500件</p>
+                </div>
+                <div class="legend-item fact">
+                    <h4>FACT_LOAN_DETAIL（貸出明細ファクト）</h4>
+                    <p>貸出金の明細データ。残高、担保、保証情報を統合管理。内部・規制両方の基礎データ。</p>
+                    <p class="count">想定件数: 3,000件</p>
+                </div>
+                <div class="legend-item fact">
+                    <h4>FACT_INTERNAL_RISK（内部リスク計測）</h4>
+                    <p>内部管理用のリスク計測結果。EL、UL、経済資本を格納。</p>
+                    <p class="count">想定件数: 3,000件</p>
+                </div>
+                <div class="legend-item fact">
+                    <h4>FACT_REGULATORY_RISK（規制資本計算）</h4>
+                    <p>規制資本計算結果。RWA、リスクウェイト、CRM情報を格納。</p>
+                    <p class="count">想定件数: 3,000件</p>
+                </div>
+                <div class="legend-item doc">
+                    <h4>RISK_DOCUMENT（リスク管理ドキュメント）</h4>
+                    <p>規程、バーゼル解説、業務マニュアル、用語集。Cortex Searchで全文検索。</p>
+                    <p class="count">想定件数: 40件</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend" style="margin-top: 20px; border-left: 4px solid #9c27b0;">
+            <h3>🎯 Cortex Agent ツール構成</h3>
+            <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+                <tr style="background-color: #f3e5f5;">
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ce93d8;">ツール名</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ce93d8;">種別</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ce93d8;">対象</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ce93d8;">用途</th>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;"><strong>InternalRiskAnalyst</strong></td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">Cortex Analyst</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">SV_INTERNAL_RISK_ANALYSIS</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">EL/UL分析、部門別・格付別集計</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;"><strong>RegulatoryRiskAnalyst</strong></td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">Cortex Analyst</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">SV_REGULATORY_RISK_ANALYSIS</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">RWA分析、リスクウェイト分布</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px;"><strong>RiskDocumentSearch</strong></td>
+                    <td style="padding: 12px;">Cortex Search</td>
+                    <td style="padding: 12px;">RISK_DOCUMENTS_CSS</td>
+                    <td style="padding: 12px;">規程・マニュアル検索、バーゼル解説</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="legend" style="margin-top: 20px; border-left: 4px solid #607d8b;">
+            <h3>📋 バーゼル規制 エクスポージャー区分</h3>
+            <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+                <tr style="background-color: #eceff1;">
+                    <th style="padding: 10px; text-align: left; border-bottom: 2px solid #90a4ae;">区分</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 2px solid #90a4ae;">標準RW</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 2px solid #90a4ae;">説明</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">ソブリン</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">0%〜150%</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">中央政府、中央銀行向け</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">金融機関</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">20%〜150%</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">銀行、証券、保険向け</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">事業法人</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">20%〜150%</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">一般事業会社向け</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">中小企業</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">75%</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">売上高50億円以下</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">リテール（居住用不動産）</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">35%</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">個人向け住宅ローン</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px;">リテール（その他）</td>
+                    <td style="padding: 10px;">75%</td>
+                    <td style="padding: 10px;">カードローン、消費者ローン等</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            er: {
+                layoutDirection: 'TB',
+                minEntityWidth: 100,
+                minEntityHeight: 75,
+                entityPadding: 15
+            },
+            flowchart: {
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>
