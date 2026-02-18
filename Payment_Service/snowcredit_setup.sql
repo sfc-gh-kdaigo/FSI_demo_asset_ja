@@ -538,6 +538,325 @@ verified_queries:
 $$
 );
 
+-- 4.2 SV_CAMPAIGN_ANALYSIS（キャンペーン分析用ビュー）
+CALL SYSTEM$CREATE_SEMANTIC_VIEW_FROM_YAML(
+  'SNOW_CREDIT.AI',
+  $$
+name: SV_CAMPAIGN_ANALYSIS
+description: |
+  キャンペーン情報と取引データを統合した分析用セマンティックビュー。
+  キャンペーン効果測定、ポイント還元分析、業種別キャンペーン成果分析が可能です。
+
+tables:
+  - name: CAMPAIGN
+    description: マーケティングキャンペーン情報
+    base_table:
+      database: SNOW_CREDIT
+      schema: DATA
+      table: DIM_CAMPAIGN
+    synonyms:
+      - キャンペーン
+      - プロモーション
+      - 施策
+    primary_key:
+      columns:
+        - CAMPAIGN_KEY
+    dimensions:
+      - name: CAMPAIGN_KEY
+        expr: CAMPAIGN_KEY
+        data_type: NUMBER(38,0)
+        description: キャンペーンサロゲートキー
+      - name: CAMPAIGN_CODE
+        expr: CAMPAIGN_CODE
+        data_type: VARCHAR
+        description: キャンペーンコード
+        synonyms:
+          - キャンペーンID
+      - name: CAMPAIGN_NAME
+        expr: CAMPAIGN_NAME
+        data_type: VARCHAR
+        description: キャンペーン名
+        synonyms:
+          - 施策名
+          - プロモーション名
+      - name: CAMPAIGN_TYPE
+        expr: CAMPAIGN_TYPE
+        data_type: VARCHAR
+        description: キャンペーン種別（POINT_BOOST/CASHBACK/BONUS/WELCOME/SEASONAL）
+        synonyms:
+          - 施策種別
+          - キャンペーン区分
+      - name: TARGET_INDUSTRY_CODE
+        expr: TARGET_INDUSTRY_CODE
+        data_type: VARCHAR
+        description: 対象業種コード
+        synonyms:
+          - 対象業種
+      - name: START_DATE
+        expr: START_DATE
+        data_type: DATE
+        description: キャンペーン開始日
+        synonyms:
+          - 開始日
+      - name: END_DATE
+        expr: END_DATE
+        data_type: DATE
+        description: キャンペーン終了日
+        synonyms:
+          - 終了日
+      - name: ACTIVE_FLAG
+        expr: ACTIVE_FLAG
+        data_type: BOOLEAN
+        description: 有効フラグ（TRUE=実施中）
+        synonyms:
+          - 有効
+          - 実施中
+    facts:
+      - name: ADDITIONAL_REWARD_RATE
+        expr: ADDITIONAL_REWARD_RATE
+        data_type: NUMBER(5,4)
+        description: 追加還元率
+        synonyms:
+          - ポイント還元率
+          - 追加ポイント率
+    metrics:
+      - name: CAMPAIGN_COUNT
+        expr: COUNT(CAMPAIGN_KEY)
+        description: キャンペーン数
+      - name: AVG_REWARD_RATE
+        expr: AVG(ADDITIONAL_REWARD_RATE)
+        description: 平均追加還元率
+
+  - name: TX
+    description: キャンペーン適用取引データ
+    base_table:
+      database: SNOW_CREDIT
+      schema: DATA
+      table: FACT_TRANSACTION
+    synonyms:
+      - 取引
+      - 利用
+      - 決済
+    primary_key:
+      columns:
+        - TRANSACTION_KEY
+    dimensions:
+      - name: TRANSACTION_KEY
+        expr: TRANSACTION_KEY
+        data_type: NUMBER(38,0)
+        description: 取引サロゲートキー
+      - name: CAMPAIGN_KEY
+        expr: CAMPAIGN_KEY
+        data_type: NUMBER(38,0)
+        description: キャンペーンキー（FK）
+      - name: CUSTOMER_KEY
+        expr: CUSTOMER_KEY
+        data_type: NUMBER(38,0)
+        description: 顧客キー（FK）
+      - name: MERCHANT_KEY
+        expr: MERCHANT_KEY
+        data_type: NUMBER(38,0)
+        description: 加盟店キー（FK）
+      - name: TRANSACTION_DATETIME
+        expr: TRANSACTION_DATETIME
+        data_type: TIMESTAMP_NTZ
+        description: 取引日時
+        synonyms:
+          - 利用日
+          - 決済日時
+      - name: TRANSACTION_TYPE
+        expr: TRANSACTION_TYPE
+        data_type: VARCHAR
+        description: 取引種別
+    facts:
+      - name: TRANSACTION_AMOUNT
+        expr: TRANSACTION_AMOUNT
+        data_type: NUMBER(12,2)
+        description: 取引金額（円）
+        synonyms:
+          - 利用金額
+      - name: EARNED_POINTS
+        expr: EARNED_POINTS
+        data_type: NUMBER(10,0)
+        description: 獲得ポイント
+        synonyms:
+          - 付与ポイント
+    metrics:
+      - name: TOTAL_AMOUNT
+        expr: SUM(TRANSACTION_AMOUNT)
+        description: 合計取引金額
+      - name: TX_COUNT
+        expr: COUNT(TRANSACTION_KEY)
+        description: 取引件数
+      - name: TOTAL_POINTS
+        expr: SUM(EARNED_POINTS)
+        description: 合計獲得ポイント
+      - name: AVG_AMOUNT
+        expr: AVG(TRANSACTION_AMOUNT)
+        description: 平均取引金額
+
+  - name: CUSTOMER
+    description: 顧客情報
+    base_table:
+      database: SNOW_CREDIT
+      schema: DATA
+      table: DIM_CUSTOMER
+    synonyms:
+      - 顧客
+      - 会員
+    primary_key:
+      columns:
+        - CUSTOMER_KEY
+    dimensions:
+      - name: CUSTOMER_KEY
+        expr: CUSTOMER_KEY
+        data_type: NUMBER(38,0)
+        description: 顧客サロゲートキー
+      - name: CUSTOMER_NAME
+        expr: CUSTOMER_NAME
+        data_type: VARCHAR
+        description: 顧客氏名
+      - name: CARD_TYPE
+        expr: CARD_TYPE
+        data_type: VARCHAR
+        description: カード種別
+        synonyms:
+          - カードグレード
+
+  - name: MERCHANT
+    description: 加盟店マスタ
+    base_table:
+      database: SNOW_CREDIT
+      schema: DATA
+      table: DIM_MERCHANT
+    synonyms:
+      - 加盟店
+      - 店舗
+    primary_key:
+      columns:
+        - MERCHANT_KEY
+    dimensions:
+      - name: MERCHANT_KEY
+        expr: MERCHANT_KEY
+        data_type: NUMBER(38,0)
+        description: 加盟店サロゲートキー
+      - name: MERCHANT_NAME
+        expr: MERCHANT_NAME
+        data_type: VARCHAR
+        description: 加盟店名
+      - name: INDUSTRY_CODE
+        expr: INDUSTRY_CODE
+        data_type: VARCHAR
+        description: 業種コード
+      - name: INDUSTRY_NAME
+        expr: INDUSTRY_NAME
+        data_type: VARCHAR
+        description: 業種名
+        synonyms:
+          - 業種
+
+relationships:
+  - name: TX_TO_CAMPAIGN
+    left_table: TX
+    right_table: CAMPAIGN
+    relationship_columns:
+      - left_column: CAMPAIGN_KEY
+        right_column: CAMPAIGN_KEY
+    relationship_type: many_to_one
+  - name: TX_TO_CUSTOMER
+    left_table: TX
+    right_table: CUSTOMER
+    relationship_columns:
+      - left_column: CUSTOMER_KEY
+        right_column: CUSTOMER_KEY
+    relationship_type: many_to_one
+  - name: TX_TO_MERCHANT
+    left_table: TX
+    right_table: MERCHANT
+    relationship_columns:
+      - left_column: MERCHANT_KEY
+        right_column: MERCHANT_KEY
+    relationship_type: many_to_one
+
+verified_queries:
+  - name: キャンペーン別取引実績
+    question: キャンペーン別の取引金額と取引件数を教えて
+    use_as_onboarding_question: true
+    sql: |
+      SELECT
+        __campaign.campaign_name,
+        __campaign.campaign_type,
+        SUM(__tx.transaction_amount) AS total_amount,
+        COUNT(__tx.transaction_key) AS tx_count,
+        SUM(__tx.earned_points) AS total_points
+      FROM __tx
+      INNER JOIN __campaign ON __tx.campaign_key = __campaign.campaign_key
+      GROUP BY __campaign.campaign_name, __campaign.campaign_type
+      ORDER BY total_amount DESC
+
+  - name: キャンペーン種別ごとの効果分析
+    question: キャンペーン種別ごとの取引金額と平均取引金額を集計して
+    use_as_onboarding_question: true
+    sql: |
+      SELECT
+        __campaign.campaign_type,
+        COUNT(DISTINCT __campaign.campaign_key) AS campaign_count,
+        SUM(__tx.transaction_amount) AS total_amount,
+        ROUND(AVG(__tx.transaction_amount), 0) AS avg_amount,
+        COUNT(__tx.transaction_key) AS tx_count
+      FROM __tx
+      INNER JOIN __campaign ON __tx.campaign_key = __campaign.campaign_key
+      GROUP BY __campaign.campaign_type
+      ORDER BY total_amount DESC
+
+  - name: 実施中キャンペーン一覧
+    question: 現在実施中のキャンペーン一覧を見せて
+    use_as_onboarding_question: true
+    sql: |
+      SELECT
+        __campaign.campaign_code,
+        __campaign.campaign_name,
+        __campaign.campaign_type,
+        __campaign.additional_reward_rate,
+        __campaign.start_date,
+        __campaign.end_date
+      FROM __campaign
+      WHERE __campaign.active_flag = TRUE
+      ORDER BY __campaign.start_date
+
+  - name: カード種別ごとのキャンペーン利用状況
+    question: カード種別ごとのキャンペーン適用取引金額を教えて
+    use_as_onboarding_question: false
+    sql: |
+      SELECT
+        __customer.card_type,
+        COUNT(__tx.transaction_key) AS tx_count,
+        SUM(__tx.transaction_amount) AS total_amount,
+        SUM(__tx.earned_points) AS total_points
+      FROM __tx
+      INNER JOIN __campaign ON __tx.campaign_key = __campaign.campaign_key
+      INNER JOIN __customer ON __tx.customer_key = __customer.customer_key
+      GROUP BY __customer.card_type
+      ORDER BY total_amount DESC
+
+  - name: 業種別キャンペーン効果
+    question: 業種別のキャンペーン適用取引を分析して
+    use_as_onboarding_question: false
+    sql: |
+      SELECT
+        __merchant.industry_name,
+        __campaign.campaign_name,
+        COUNT(__tx.transaction_key) AS tx_count,
+        SUM(__tx.transaction_amount) AS total_amount
+      FROM __tx
+      INNER JOIN __campaign ON __tx.campaign_key = __campaign.campaign_key
+      INNER JOIN __merchant ON __tx.merchant_key = __merchant.merchant_key
+      GROUP BY __merchant.industry_name, __campaign.campaign_name
+      ORDER BY total_amount DESC
+      LIMIT 20
+$$
+);
+
 -- =============================================================================
 -- 6. Cortex Search Service 作成
 -- =============================================================================
@@ -586,29 +905,67 @@ instructions:
   orchestration: |
     1. ユーザーからの質問を受け取り、質問の意図を分析する
     2. 質問の内容に応じて、適切なツールを選択：
-       - 構造化データ（顧客情報、取引データ、加盟店情報など）に関する質問 → Analyst
+       - 顧客情報、取引データ、加盟店情報に関する質問 → CustomerAnalyst
+       - キャンペーン、ポイント還元、施策効果に関する質問 → CampaignAnalyst
        - 業務マニュアル、FAQ、規約に関する質問 → DocumentSearch
     3. ツールの使い分け基準：
-       - 「〇〇の件数」「合計金額」「平均」など数値を求める質問 → Analyst
+       - 「顧客数」「取引金額」「カード種別」など顧客・取引の分析 → CustomerAnalyst
+       - 「キャンペーン」「ポイント還元」「施策効果」に関する分析 → CampaignAnalyst
        - 「手順」「方法」「規約」「ルール」に関する質問 → DocumentSearch
        - 複合的な質問の場合は、必要に応じて複数のツールを使用
   sample_questions:
     - question: "カード種別ごとに顧客数と平均年収を教えてください"
       answer: "お客様分析をするために、顧客データからカード種別ごとに顧客数と平均年収を調べてください"
-    - question: "では、次は業種別の取引金額と取引件数を集計してもらえますか"
-      answer: "顧客データから、業種別の取引金額と取引件数を集計します。"
+    - question: "キャンペーン別の取引金額と取引件数を教えて"
+      answer: "キャンペーンデータから、キャンペーン別の取引金額と取引件数を集計します。"
+    - question: "現在実施中のキャンペーン一覧を見せて"
+      answer: "キャンペーンマスタから、現在有効なキャンペーンの一覧を取得します。"
     - question: "カード紛失時の対応手順を教えてください"
       answer: "業務マニュアルから、カード紛失時の対応手順をご案内します。"
-    - question: "海外利用時の注意事項は何ですか"
-      answer: "利用規約から、海外利用に関する注意事項をお伝えします。"
     - question: "最近高額取引をしている顧客を確認し、利用限度額の変更手続きについても教えてください"
       answer: "取引データから高額利用の顧客を抽出し、与信管理ポリシーから利用限度額の変更手続きをご案内します。"
 
 tools:
   - tool_spec:
       type: cortex_analyst_text_to_sql
-      name: Analyst
-      description: "顧客情報、取引データ、加盟店情報、キャンペーン情報などの構造化データに関する質問に回答します"
+      name: CustomerAnalyst
+      description: |
+        【顧客・取引データ分析ツール】
+        顧客情報、取引データ、加盟店情報の分析を行います。
+
+        ■ 分析可能なデータ：
+        - 顧客情報（氏名、住所、職業、年収、カード種別など）
+        - 取引データ（取引金額、取引日時、獲得ポイントなど）
+        - 加盟店情報（加盟店名、業種など）
+
+        ■ 質問例：
+        「カード種別ごとの顧客数と平均年収を教えて」
+        「月別の取引金額推移を見せて」
+        「業種別の取引件数を集計して」
+
+  - tool_spec:
+      type: cortex_analyst_text_to_sql
+      name: CampaignAnalyst
+      description: |
+        【キャンペーン分析ツール】
+        キャンペーン情報とその効果測定、ポイント還元分析を行います。
+
+        ■ 分析可能なデータ：
+        - キャンペーン情報（キャンペーン名、種別、還元率、期間など）
+        - キャンペーン適用取引（取引金額、獲得ポイントなど）
+        - カード種別・業種別のキャンペーン効果
+
+        ■ キャンペーン種別：
+        - POINT_BOOST: ポイント倍増
+        - CASHBACK: キャッシュバック
+        - BONUS: ボーナスポイント
+        - WELCOME: 新規入会特典
+        - SEASONAL: 季節キャンペーン
+
+        ■ 質問例：
+        「キャンペーン別の取引金額を教えて」
+        「実施中のキャンペーン一覧を見せて」
+        「キャンペーン種別ごとの効果を分析して」
 
   - tool_spec:
       type: cortex_search
@@ -616,8 +973,10 @@ tools:
       description: "業務マニュアル、FAQ、利用規約、ガイドラインなどのドキュメントを検索します"
 
 tool_resources:
-  Analyst:
+  CustomerAnalyst:
     semantic_view: "SNOW_CREDIT.AI.SV_CUSTOMER_TRANSACTION"
+  CampaignAnalyst:
+    semantic_view: "SNOW_CREDIT.AI.SV_CAMPAIGN_ANALYSIS"
   DocumentSearch:
     name: "SNOW_CREDIT.AI.OPERATION_DOCUMENTS_CSS"
     max_results: "5"
@@ -632,6 +991,7 @@ UNION ALL SELECT 'DIM_CAMPAIGN', COUNT(*) FROM SNOW_CREDIT.DATA.DIM_CAMPAIGN
 UNION ALL SELECT 'FACT_TRANSACTION', COUNT(*) FROM SNOW_CREDIT.DATA.FACT_TRANSACTION
 UNION ALL SELECT 'OPERATION_DOCUMENT', COUNT(*) FROM SNOW_CREDIT.DATA.OPERATION_DOCUMENT;
 
+-- Semantic View確認（2つ：顧客取引分析 + キャンペーン分析）
 SHOW SEMANTIC VIEWS IN SCHEMA SNOW_CREDIT.AI;
 SHOW CORTEX SEARCH SERVICES IN SCHEMA SNOW_CREDIT.AI;
 SHOW AGENTS IN SCHEMA SNOW_CREDIT.AI;
