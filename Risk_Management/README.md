@@ -160,8 +160,7 @@ SHOW AGENTS IN SCHEMA SNOW_RISK.AI;
 Risk_Management/
 ├── README.md               # 本ファイル
 ├── risk_setup.sql          # 環境構築 SQL
-├── er_diagram_risk.html    # ER図（ブラウザ表示用）
-└── plan.md                 # 設計ドキュメント
+└── er_diagram_risk.html    # ER図（ブラウザ表示用）
 ```
 
 ## ⚠️ 免責事項
