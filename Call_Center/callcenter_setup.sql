@@ -277,7 +277,7 @@ SELECT
     UNIFORM(1, 30, RANDOM()),
     cat_key,
     CASE WHEN UNIFORM(0, 4, RANDOM()) < 4 THEN UNIFORM(1, 20, RANDOM()) ELSE NULL END,
-    DATEADD(MINUTE, UNIFORM(0, 525600, RANDOM()), '2024-01-01 08:00:00'::TIMESTAMP),
+    DATEADD(MINUTE, UNIFORM(0, 525600, RANDOM()), '2025-01-01 08:00:00'::TIMESTAMP),
     ARRAY_CONSTRUCT('電話', '電話', '電話', '電話', 'メール', 'チャット', 'Web')[UNIFORM(0, 6, RANDOM())::INT],
     ARRAY_CONSTRUCT(
         '口座残高の確認をしたい',
@@ -296,7 +296,7 @@ SELECT
     UNIFORM(0, 300, RANDOM()),
     UNIFORM(1, 5, RANDOM()),
     ARRAY_CONSTRUCT('完了', '完了', '完了', '完了', '完了', '対応中', 'エスカレーション中')[UNIFORM(0, 6, RANDOM())::INT],
-    UNIFORM(0, 9, RANDOM()) < 1,
+    UNIFORM(0, 6, RANDOM()) < 1,
     UNIFORM(0, 9, RANDOM()) < 3
 FROM (
     SELECT 
@@ -345,7 +345,7 @@ SELECT
 FROM (
     SELECT 
         SEQ4(),
-        DATEADD(MINUTE, UNIFORM(0, 525600, RANDOM()), '2024-01-01 08:00:00'::TIMESTAMP) AS call_start,
+        DATEADD(MINUTE, UNIFORM(0, 525600, RANDOM()), '2025-01-01 08:00:00'::TIMESTAMP) AS call_start,
         UNIFORM(180, 1200, RANDOM()) AS call_duration,
         'オペレーター: お電話ありがとうございます。SnowBankコールセンターでございます。\n' ||
         '顧客: ' || ARRAY_CONSTRUCT(
@@ -942,8 +942,8 @@ instructions:
   sample_questions:
     - question: "カテゴリ別の問い合わせ件数を教えて"
       answer: "問い合わせデータからカテゴリ別の件数を集計します。"
-    - question: "昨年のエスカレーション件数は？"
-      answer: "問い合わせデータから昨年（2024年）のエスカレーション件数を集計します。"
+    - question: "昨年のエスカレーション件数と発生率は？"
+      answer: "問い合わせデータから昨年（2025年）のエスカレーション件数と発生率を集計します。"
     - question: "カード紛失時の対応手順を教えて"
       answer: "業務マニュアルからカード紛失時の対応手順をご案内します。"
     - question: "クレーム対応のスクリプトを教えて"
