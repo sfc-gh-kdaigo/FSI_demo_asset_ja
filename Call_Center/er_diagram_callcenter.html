@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnowBank コールセンター ER図</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #29b5e8;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #666;
+            text-align: center;
+            font-weight: normal;
+            margin-top: 0;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        .legend {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .legend h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .legend-item {
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            border-left: 4px solid #29b5e8;
+        }
+        .legend-item h4 {
+            margin: 0 0 10px 0;
+            color: #29b5e8;
+        }
+        .legend-item p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .legend-item .count {
+            font-weight: bold;
+            color: #333;
+        }
+        .system-flow {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-radius: 8px;
+        }
+        .system-flow h3 {
+            color: #29b5e8;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📞 SnowBank コールセンター</h1>
+        <h2>Entity Relationship Diagram</h2>
+        
+        <div class="mermaid">
+erDiagram
+    DIM_CUSTOMER {
+        NUMBER CUSTOMER_KEY PK "顧客サロゲートキー"
+        VARCHAR CUSTOMER_NUMBER "顧客番号"
+        VARCHAR CUSTOMER_NAME "顧客氏名"
+        VARCHAR CUSTOMER_NAME_MASKED "氏名(トークン化)"
+        DATE BIRTH_DATE "生年月日"
+        VARCHAR GENDER "性別"
+        VARCHAR ADDRESS "住所"
+        VARCHAR ADDRESS_MASKED "住所(トークン化)"
+        VARCHAR PHONE_NUMBER "電話番号"
+        VARCHAR PHONE_NUMBER_MASKED "電話(トークン化)"
+        VARCHAR ACCOUNT_NUMBER "口座番号"
+        VARCHAR ACCOUNT_NUMBER_MASKED "口座(トークン化)"
+        VARCHAR CARD_NUMBER "カード番号"
+        VARCHAR CARD_NUMBER_MASKED "カード(トークン化)"
+        VARCHAR CUSTOMER_RANK "顧客ランク"
+        DATE JOIN_DATE "入会日"
+        BOOLEAN ACTIVE_FLAG "有効フラグ"
+    }
+
+    DIM_PRODUCT {
+        NUMBER PRODUCT_KEY PK "商品サロゲートキー"
+        VARCHAR PRODUCT_CODE "商品コード"
+        VARCHAR PRODUCT_NAME "商品名"
+        VARCHAR PRODUCT_CATEGORY "商品カテゴリ"
+        VARCHAR DESCRIPTION "説明"
+        BOOLEAN ACTIVE_FLAG "有効フラグ"
+    }
+
+    DIM_OPERATOR {
+        NUMBER OPERATOR_KEY PK "オペレーターサロゲートキー"
+        VARCHAR OPERATOR_ID "オペレーターID"
+        VARCHAR OPERATOR_NAME "オペレーター名"
+        VARCHAR TEAM_NAME "所属チーム"
+        VARCHAR SKILL_LEVEL "スキルレベル"
+        DATE HIRE_DATE "入社日"
+        BOOLEAN ACTIVE_FLAG "有効フラグ"
+    }
+
+    DIM_INQUIRY_CATEGORY {
+        NUMBER CATEGORY_KEY PK "カテゴリサロゲートキー"
+        VARCHAR CATEGORY_CODE "カテゴリコード"
+        VARCHAR CATEGORY_NAME "カテゴリ名"
+        VARCHAR PARENT_CATEGORY "親カテゴリ"
+        VARCHAR PRIORITY_LEVEL "優先度"
+        BOOLEAN ESCALATION_REQUIRED "エスカレ必須"
+        BOOLEAN RPA_ELIGIBLE "RPA対象"
+    }
+
+    FACT_INQUIRY {
+        NUMBER INQUIRY_KEY PK "問い合わせサロゲートキー"
+        VARCHAR INQUIRY_NUMBER "問い合わせ番号"
+        NUMBER CUSTOMER_KEY FK "顧客キー"
+        NUMBER OPERATOR_KEY FK "オペレーターキー"
+        NUMBER CATEGORY_KEY FK "カテゴリキー"
+        NUMBER PRODUCT_KEY FK "商品キー"
+        TIMESTAMP INQUIRY_DATETIME "問い合わせ日時"
+        VARCHAR CHANNEL "チャネル"
+        VARCHAR INQUIRY_SUMMARY "問い合わせ要約"
+        VARCHAR RESPONSE_SUMMARY "対応要約"
+        NUMBER HANDLE_TIME_SECONDS "対応時間(秒)"
+        NUMBER HOLD_TIME_SECONDS "保留時間(秒)"
+        NUMBER SATISFACTION_SCORE "満足度"
+        VARCHAR STATUS "ステータス"
+        BOOLEAN ESCALATED_FLAG "エスカレフラグ"
+        BOOLEAN RPA_PROCESSED_FLAG "RPA処理フラグ"
+    }
+
+    FACT_CALL_TRANSCRIPT {
+        NUMBER TRANSCRIPT_KEY PK "テキストサロゲートキー"
+        VARCHAR TRANSCRIPT_ID "テキストID"
+        NUMBER INQUIRY_KEY FK "問い合わせキー"
+        NUMBER CUSTOMER_KEY FK "顧客キー"
+        NUMBER OPERATOR_KEY FK "オペレーターキー"
+        TIMESTAMP CALL_START_DATETIME "通話開始日時"
+        TIMESTAMP CALL_END_DATETIME "通話終了日時"
+        NUMBER CALL_DURATION_SECONDS "通話時間(秒)"
+        VARCHAR RAW_TRANSCRIPT "生テキスト"
+        VARCHAR TRANSCRIPT_MASKED "テキスト(マスク済)"
+        VARCHAR AI_SUMMARY "AI要約"
+        NUMBER SENTIMENT_SCORE "感情スコア"
+        VARCHAR KEYWORDS "キーワード"
+    }
+
+    FACT_RPA_INSTRUCTION {
+        NUMBER INSTRUCTION_KEY PK "指示サロゲートキー"
+        VARCHAR INSTRUCTION_ID "指示ID"
+        NUMBER INQUIRY_KEY FK "問い合わせキー"
+        NUMBER CUSTOMER_KEY FK "顧客キー"
+        VARCHAR PROCESS_TYPE "処理種別"
+        VARCHAR PROCESS_PARAMS "処理パラメータ"
+        VARCHAR PRIORITY "優先度"
+        VARCHAR STATUS "ステータス"
+        TIMESTAMP PROCESSED_AT "処理日時"
+        VARCHAR RESULT_MESSAGE "結果メッセージ"
+    }
+
+    CALL_CENTER_DOCUMENT {
+        VARCHAR DOCUMENT_ID PK "ドキュメントID"
+        VARCHAR TITLE "タイトル"
+        VARCHAR CONTENT "内容"
+        VARCHAR DOCUMENT_TYPE "種別"
+        VARCHAR CATEGORY "カテゴリ"
+        VARCHAR KEYWORDS "キーワード"
+        NUMBER VERSION "バージョン"
+    }
+
+    DIM_CUSTOMER ||--o{ FACT_INQUIRY : "問い合わせする"
+    DIM_OPERATOR ||--o{ FACT_INQUIRY : "対応する"
+    DIM_INQUIRY_CATEGORY ||--o{ FACT_INQUIRY : "分類される"
+    DIM_PRODUCT ||--o{ FACT_INQUIRY : "関連する"
+    FACT_INQUIRY ||--o{ FACT_CALL_TRANSCRIPT : "通話記録"
+    FACT_INQUIRY ||--o{ FACT_RPA_INSTRUCTION : "RPA指示"
+    DIM_CUSTOMER ||--o{ FACT_CALL_TRANSCRIPT : "通話する"
+    DIM_OPERATOR ||--o{ FACT_CALL_TRANSCRIPT : "対応する"
+    DIM_CUSTOMER ||--o{ FACT_RPA_INSTRUCTION : "処理対象"
+        </div>
+
+        <div class="system-flow">
+            <h3>🔄 システム連携フロー</h3>
+            <div class="mermaid">
+flowchart LR
+    subgraph 入力
+        A[📞 顧客通話]
+        B[🎤 AmiVoice<br/>音声認識]
+    end
+    
+    subgraph Snowflake
+        C[(FACT_CALL_TRANSCRIPT<br/>通話テキスト)]
+        D[🤖 Cortex Agent<br/>処理判断]
+        E[(CALL_CENTER_DOCUMENT<br/>マニュアル/FAQ)]
+        F[(FACT_RPA_INSTRUCTION<br/>RPA指示)]
+    end
+    
+    subgraph 出力
+        G[📋 Salesforce<br/>承認/確認]
+        H[🤖 RPA<br/>自動処理]
+    end
+    
+    A --> B
+    B --> C
+    C --> D
+    E --> D
+    D --> F
+    F --> G
+    G --> H
+    
+    style D fill:#29b5e8,color:white
+    style C fill:#f0f8ff
+    style E fill:#f0f8ff
+    style F fill:#f0f8ff
+            </div>
+        </div>
+
+        <div class="legend">
+            <h3>📊 テーブル説明</h3>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <h4>DIM_CUSTOMER（顧客マスタ）</h4>
+                    <p>顧客の基本情報を管理。個人情報はトークン化（[NAME_1], [CARD_XXXX]等）されたカラムも保持。</p>
+                    <p class="count">想定件数: 200件</p>
+                </div>
+                <div class="legend-item">
+                    <h4>DIM_PRODUCT（商品マスタ）</h4>
+                    <p>銀行の商品・サービス情報（預金、ローン、カード、保険等）を管理。</p>
+                    <p class="count">想定件数: 20件</p>
+                </div>
+                <div class="legend-item">
+                    <h4>DIM_OPERATOR（オペレーターマスタ）</h4>
+                    <p>コールセンターオペレーターの情報（所属チーム、スキルレベル等）を管理。</p>
+                    <p class="count">想定件数: 30件</p>
+                </div>
+                <div class="legend-item">
+                    <h4>DIM_INQUIRY_CATEGORY（カテゴリマスタ）</h4>
+                    <p>問い合わせの分類カテゴリ。優先度、エスカレーション要否、RPA対象フラグを持つ。</p>
+                    <p class="count">想定件数: 25件</p>
+                </div>
+                <div class="legend-item">
+                    <h4>FACT_INQUIRY（問い合わせファクト）</h4>
+                    <p>顧客からの問い合わせ記録。対応時間、満足度、エスカレーション状況を記録。</p>
+                    <p class="count">想定件数: 2,000件</p>
+                </div>
+                <div class="legend-item">
+                    <h4>FACT_CALL_TRANSCRIPT（通話テキスト）</h4>
+                    <p>AmiVoice連携を想定した通話テキストデータ。AI要約、感情スコアも保持。</p>
+                    <p class="count">想定件数: 500件</p>
+                </div>
+                <div class="legend-item">
+                    <h4>FACT_RPA_INSTRUCTION（RPA指示）</h4>
+                    <p>RPA連携用の処理指示データ。処理種別、パラメータ、ステータスを管理。</p>
+                    <p class="count">想定件数: 300件</p>
+                </div>
+                <div class="legend-item">
+                    <h4>CALL_CENTER_DOCUMENT（ドキュメント）</h4>
+                    <p>FAQ、マニュアル、対応スクリプト等のドキュメント。Cortex Searchで検索。</p>
+                    <p class="count">想定件数: 32件</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend" style="margin-top: 20px; border-left: 4px solid #ff9800;">
+            <h3>🔐 トークン化（個人情報マスキング）</h3>
+            <p style="color: #666;">顧客の個人情報は以下のルールでトークン化されます。RPA連携やログ出力時に使用。</p>
+            <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+                <tr style="background-color: #f0f0f0;">
+                    <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">データ種別</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">トークン形式</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">例</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">氏名</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;"><code>[NAME_n]</code></td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">[NAME_1], [NAME_2]</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">カード番号</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;"><code>[CARD_XXXXnnnn]</code></td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">[CARD_XXXX1234]</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">口座番号</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;"><code>[ACCT_XXXXnnnn]</code></td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">[ACCT_XXXX5678]</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">電話番号</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;"><code>[PHONE_n]</code></td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">[PHONE_1]</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px;">住所</td>
+                    <td style="padding: 10px;"><code>[ADDR_n]</code></td>
+                    <td style="padding: 10px;">[ADDR_1]</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            er: {
+                layoutDirection: 'TB',
+                minEntityWidth: 100,
+                minEntityHeight: 75,
+                entityPadding: 15
+            },
+            flowchart: {
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>
