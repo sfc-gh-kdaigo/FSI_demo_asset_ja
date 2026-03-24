@@ -39,7 +39,41 @@ CREATE OR REPLACE AGENT CREDIT_MGMT_DB.AGENT.CREDIT_MANAGEMENT_AGENT
     },
     "instructions": {
       "orchestration": "ユーザーの質問に応じて適切なツールを選択してください。融資残高・財務指標・業種別分析などのデータ分析にはcredit_analysis_svを使用。面談・審査記録の検索にはcredit_review_searchを使用。与信規程・業界レポートの照会にはcredit_policy_searchを使用。信用スコア算出にはcalculate_credit_score、審査レポート生成にはgenerate_review_reportを使用。",
-      "response": "全ての回答は日本語で行うこと。数値データには必ず単位（百万円、%等）と基準日を明記。結論を最初に述べ、詳細データは表形式で提示。リスク要因や注意事項があれば必ず明示。"
+      "response": "全ての回答は日本語で行うこと。数値データには必ず単位（百万円、%等）と基準日を明記。結論を最初に述べ、詳細データは表形式で提示。リスク要因や注意事項があれば必ず明示。",
+      "sample_questions": [
+        {
+          "question": "業種別の融資残高と件数を教えてください",
+          "answer": "credit_analysis_svを使って業種別のポートフォリオ分析を実行します。"
+        },
+        {
+          "question": "延滞が発生している融資先の状況を教えてください",
+          "answer": "credit_analysis_svで延滞先の一覧と延滞日数を取得します。"
+        },
+        {
+          "question": "オールドメタルの信用スコアを計算してください",
+          "answer": "calculate_credit_scoreで財務指標に基づく信用スコアを算出します。"
+        },
+        {
+          "question": "サニーエステートの審査レポートを作成してください",
+          "answer": "generate_review_reportで財務・融資・担保情報を集約したレポートを生成します。"
+        },
+        {
+          "question": "クラウドネクストとの直近の面談内容を教えてください",
+          "answer": "credit_review_searchで面談記録を検索します。"
+        },
+        {
+          "question": "要注意先への追加融資の基準は？",
+          "answer": "credit_policy_searchで与信規程ガイドラインの該当箇所を検索します。"
+        },
+        {
+          "question": "オールドメタルの財務推移と過去の審査で指摘されたリスクをまとめてください",
+          "answer": "credit_analysis_svで財務データを取得し、credit_review_searchで審査記録を検索して総合分析します。"
+        },
+        {
+          "question": "不動産担保の掛目基準は？",
+          "answer": "credit_policy_searchで与信規程の担保掛目基準を検索します。"
+        }
+      ]
     },
     "tools": [
       {
