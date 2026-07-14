@@ -1740,7 +1740,7 @@ CREATE OR REPLACE AGENT RISK_MANAGEMENT_AGENT
   FROM SPECIFICATION
   $$
   models:
-    orchestration: claude-3-5-sonnet
+    orchestration: claude-sonnet-4-6
 
   orchestration:
     budget:

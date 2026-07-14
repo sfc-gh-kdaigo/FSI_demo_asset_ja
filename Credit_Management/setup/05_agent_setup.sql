@@ -35,7 +35,7 @@ CREATE OR REPLACE AGENT CREDIT_MGMT_DB.AGENT.CREDIT_MANAGEMENT_AGENT
   FROM SPECIFICATION $$
   {
     "models": {
-      "orchestration": "claude-3-5-sonnet"
+      "orchestration": "claude-sonnet-4-6"
     },
     "instructions": {
       "orchestration": "ユーザーの質問に応じて適切なツールを選択してください。融資残高・財務指標・業種別分析などのデータ分析にはcredit_analysis_svを使用。面談・審査記録の検索にはcredit_review_searchを使用。与信規程・業界レポートの照会にはcredit_policy_searchを使用。信用スコア算出にはcalculate_credit_score、審査レポート生成にはgenerate_review_reportを使用。",

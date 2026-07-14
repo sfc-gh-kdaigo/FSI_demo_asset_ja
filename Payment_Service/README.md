@@ -92,7 +92,7 @@ DIM_MERCHANT ──┘
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                      Cortex Agent                           │
-│             CREDIT_CARD_AGENT (claude-4-sonnet)             │
+│             CREDIT_CARD_AGENT (claude-sonnet-4-6)             │
 │  ┌───────────────┬───────────────┬───────────────────────┐  │
 │  │CustomerAnalyst│CampaignAnalyst│    DocumentSearch     │  │
 │  │  (顧客分析)   │(キャンペーン) │   (ドキュメント検索)   │  │

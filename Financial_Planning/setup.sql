@@ -719,7 +719,7 @@ CREATE OR REPLACE AGENT BANK_BPR_DB.ANALYTICS.BANK_FINANCE_AGENT
   FROM SPECIFICATION
   $$
   models:
-    orchestration: claude-4-sonnet
+    orchestration: claude-sonnet-4-6
 
   orchestration:
     budget:

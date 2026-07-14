@@ -886,7 +886,7 @@ CREATE OR REPLACE AGENT SNOW_CREDIT.AI.CREDIT_CARD_AGENT
   FROM SPECIFICATION
 $$
 models:
-  orchestration: claude-4-sonnet
+  orchestration: claude-sonnet-4-6
 
 instructions:
   response: |

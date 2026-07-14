@@ -113,4 +113,4 @@ python Credit_Management/setup/generate_sample_pdfs.py
 
 - 全ての企業名・財務データは架空のデモ用データです
 - `CORTEX_ENABLED_CROSS_REGION = 'ANY_REGION'` が `01_db_setup.sql` で設定されます
-- Agent のモデルは `claude-3-5-sonnet` を使用しています
+- Agent のモデルは `claude-sonnet-4-6` を使用しています
