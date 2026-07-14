@@ -1,7 +1,7 @@
 # 🏦 信託銀行 財務企画部 AIアシスタント
 
 大手信託銀行の財務企画部における **BPR（業務改革）プロジェクト** のデモ環境です。
-**Snowflake Intelligence** のAIエージェントが、予算管理・収益分析・決算業務・規程照会をワンストップで支援します。
+**Snowflake CoWork** のAIエージェントが、予算管理・収益分析・決算業務・規程照会をワンストップで支援します。
 
 ---
 
@@ -121,7 +121,7 @@
 
 - Snowflake アカウント（Enterprise 以上、Cortex AI が利用可能なリージョン）
 - ACCOUNTADMIN ロール
-- Snowflake Intelligence が利用可能であること
+- Snowflake CoWork が利用可能であること
 
 ### 2️⃣ setup.sql の実行（Step 1〜5）
 
@@ -254,7 +254,7 @@ Financial_Planning/
 
 ## ⚠️ 免責事項
 
-- このデモは Snowflake Intelligence の機能紹介を目的としています
+- このデモは Snowflake CoWork の機能紹介を目的としています
 - SnowBank Trust は架空の金融機関です
 - 表示されるデータはすべてサンプルデータです
 - 実際の業務判断には使用しないでください
@@ -263,7 +263,7 @@ Financial_Planning/
 
 ## 📚 参考リンク
 
-- [Snowflake Intelligence](https://docs.snowflake.com/en/user-guide/snowflake-intelligence)
+- [Snowflake CoWork](https://docs.snowflake.com/en/user-guide/snowflake-intelligence)
 - [Cortex Agent](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents)
 - [Cortex Analyst](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst)
 - [Cortex Search](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview)

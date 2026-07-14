@@ -270,12 +270,12 @@ CREATE OR REPLACE AGENT CREDIT_MGMT_DB.AGENT.CREDIT_MANAGEMENT_AGENT
 
 
 -- =========================================================
--- Step 3: Snowflake Intelligence への公開
+-- Step 3: Snowflake CoWork への公開
 -- =========================================================
--- Snowflake Intelligence は GUI で設定します。
+-- Snowflake CoWork は GUI で設定します。
 --
 -- 【手順】
--- 1. Snowsight > AI & ML > Snowflake Intelligence を開く
+-- 1. Snowsight > AI & ML > Snowflake CoWork を開く
 -- 2. 「+ Intelligence」ボタンをクリック
 -- 3. 以下の情報を入力:
 --

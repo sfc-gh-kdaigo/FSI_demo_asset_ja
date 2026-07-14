@@ -1,6 +1,6 @@
 # 📞 SnowBank コールセンター デモ環境
 
-金融機関のコールセンター業務を支援する **Snowflake Intelligence** デモ環境です。
+金融機関のコールセンター業務を支援する **Snowflake CoWork** デモ環境です。
 
 ## 🎯 概要
 
@@ -145,7 +145,7 @@ Call_Center/
 
 ## ⚠️ 免責事項
 
-- このデモはSnowflake Intelligenceの機能紹介を目的としています
+- このデモはSnowflake CoWorkの機能紹介を目的としています
 - SnowBankは架空の金融機関です
 - 表示されるデータはすべてサンプルデータです
 - 実際の業務判断には使用しないでください

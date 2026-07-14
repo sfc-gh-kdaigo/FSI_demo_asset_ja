@@ -65,7 +65,7 @@ snowsql -q "ALTER STAGE CREDIT_MGMT_DB.DOCUMENTS.credit_docs REFRESH;"
 -- 05_agent_setup.sql を全文実行
 ```
 
-### Step 6: Snowflake Intelligence 公開（任意・GUI操作）
+### Step 6: Snowflake CoWork 公開（任意・GUI操作）
 
 `05_agent_setup.sql` 内の Step 3 コメントに記載の手順で、Snowsight の GUI から Intelligence を公開します。
 

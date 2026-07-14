@@ -1,4 +1,4 @@
-# 💳 SnowCredit - クレジットカード業界向け Snowflake Intelligence デモ
+# 💳 SnowCredit - クレジットカード業界向け Snowflake CoWork デモ
 
 架空のクレジットカード会社「SnowCredit」を題材にした Snowflake Cortex AI デモ環境
 
@@ -85,7 +85,7 @@ DIM_MERCHANT ──┘
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                  Snowflake Intelligence                     │
+│                  Snowflake CoWork                     │
 │                    （チャットUI）                            │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -119,7 +119,7 @@ DIM_MERCHANT ──┘
 
 | コンポーネント | 役割 |
 |:---|:---|
-| **Snowflake Intelligence** | Cortex Agent を利用するためのチャット UI |
+| **Snowflake CoWork** | Cortex Agent を利用するためのチャット UI |
 | **Cortex Agent** | ユーザーの質問を解析し、適切なツールを自動選択・実行 |
 | **CustomerAnalyst（ツール）** | 顧客・取引・加盟店データの分析（Text-to-SQL） |
 | **CampaignAnalyst（ツール）** | キャンペーン効果・ポイント還元の分析（Text-to-SQL） |
@@ -127,7 +127,7 @@ DIM_MERCHANT ──┘
 
 ---
 
-## 💬 Snowflake Intelligence への質問例
+## 💬 Snowflake CoWork への質問例
 
 ### 👥 顧客・取引分析（CustomerAnalyst）
 - 「カード種別ごとに顧客数と平均年収を教えてください」
@@ -189,8 +189,8 @@ SNOW_CREDIT
    - Cortex Search Service の作成
    - Cortex Agent の作成
 
-3. **Snowflake Intelligence でエージェントを選択**
-   - Snowsight 左メニューから「Snowflake Intelligence」を開く
+3. **Snowflake CoWork でエージェントを選択**
+   - Snowsight 左メニューから「Snowflake CoWork」を開く
    - 「Credit Card Agent」を選択してチャット開始
 
 ---
