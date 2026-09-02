@@ -1,5 +1,5 @@
 -- =====================================================
--- SNOW_CALLCENTER 環境構築
+-- SF_CALLCENTER 環境構築
 -- コールセンター向けデモ環境
 -- =====================================================
 
@@ -8,23 +8,23 @@
 -- =============================================================================
 USE ROLE ACCOUNTADMIN;
 
-CREATE WAREHOUSE IF NOT EXISTS SNOW_CALLCENTER_WH
+CREATE WAREHOUSE IF NOT EXISTS SF_CALLCENTER_WH
     WAREHOUSE_SIZE = 'XSMALL'
     AUTO_SUSPEND = 60
     AUTO_RESUME = TRUE
     INITIALLY_SUSPENDED = TRUE
-    COMMENT = 'SnowBank コールセンターデモ用ウェアハウス';
+    COMMENT = 'SFBank コールセンターデモ用ウェアハウス';
 
-USE WAREHOUSE SNOW_CALLCENTER_WH;
+USE WAREHOUSE SF_CALLCENTER_WH;
 
 -- =============================================================================
 -- 2. データベース・スキーマ作成
 -- =============================================================================
-CREATE DATABASE IF NOT EXISTS SNOW_CALLCENTER;
-CREATE SCHEMA IF NOT EXISTS SNOW_CALLCENTER.DATA;
-CREATE SCHEMA IF NOT EXISTS SNOW_CALLCENTER.AI;
+CREATE DATABASE IF NOT EXISTS SF_CALLCENTER;
+CREATE SCHEMA IF NOT EXISTS SF_CALLCENTER.DATA;
+CREATE SCHEMA IF NOT EXISTS SF_CALLCENTER.AI;
 
-USE DATABASE SNOW_CALLCENTER;
+USE DATABASE SF_CALLCENTER;
 USE SCHEMA DATA;
 
 -- =============================================================================
@@ -347,7 +347,7 @@ FROM (
         SEQ4(),
         DATEADD(MINUTE, UNIFORM(0, 525600, RANDOM()), '2025-01-01 08:00:00'::TIMESTAMP) AS call_start,
         UNIFORM(180, 1200, RANDOM()) AS call_duration,
-        'オペレーター: お電話ありがとうございます。SnowBankコールセンターでございます。\n' ||
+        'オペレーター: お電話ありがとうございます。SFBankコールセンターでございます。\n' ||
         '顧客: ' || ARRAY_CONSTRUCT(
             'クレジットカードが破損してしまいました。',
             '口座残高を確認したいのですが。',
@@ -426,7 +426,7 @@ VALUES
 ('DOC022', 'RPA連携処理ガイド', 'RPA（ロボティック・プロセス・オートメーション）連携の処理ガイドです。\n\n【RPA対象処理】\n- カード再発行\n- 住所変更\n- 暗証番号再設定\n- 口座開設\n- 利用限度額変更\n- 利用停止\n\n【処理指示フォーマット】\n{\n  "process_type": "カード再発行",\n  "customer_key": "[CUST_KEY]",\n  "card_number": "[CARD_XXXX****]",\n  "delivery_address": "登録住所",\n  "priority": "通常/緊急",\n  "notes": "破損理由等"\n}\n\n【ステータス確認】\n- 処理待ち: RPAキューに登録済み\n- 処理中: RPA実行中\n- 完了: 処理完了\n- エラー: 要手動対応\n\n【注意事項】\n- 個人情報はトークン化して連携\n- エラー時はSVに報告', 'マニュアル', 'RPA', 'RPA,自動化,連携,処理'),
 
 -- スクリプト・テンプレート（10件）
-('DOC023', 'オープニングトーク例', '電話応対のオープニングトーク例です。\n\n【基本形】\n「お電話ありがとうございます。SnowBankコールセンター、[名前]でございます。」\n\n【時間帯別】\n午前: 「おはようございます。SnowBankコールセンター、[名前]でございます。」\n午後: 「お電話ありがとうございます。SnowBankコールセンター、[名前]でございます。」\n\n【折り返し時】\n「先ほどはお電話いただきありがとうございました。SnowBankの[名前]でございます。[お客様名]様のお電話でよろしいでしょうか。」\n\n【ポイント】\n- 明るく、はっきりと\n- 名乗りは聞き取りやすく\n- お客様が話し始めるまで待つ', 'スクリプト', '応対', 'オープニング,挨拶,電話'),
+('DOC023', 'オープニングトーク例', '電話応対のオープニングトーク例です。\n\n【基本形】\n「お電話ありがとうございます。SFBankコールセンター、[名前]でございます。」\n\n【時間帯別】\n午前: 「おはようございます。SFBankコールセンター、[名前]でございます。」\n午後: 「お電話ありがとうございます。SFBankコールセンター、[名前]でございます。」\n\n【折り返し時】\n「先ほどはお電話いただきありがとうございました。SFBankの[名前]でございます。[お客様名]様のお電話でよろしいでしょうか。」\n\n【ポイント】\n- 明るく、はっきりと\n- 名乗りは聞き取りやすく\n- お客様が話し始めるまで待つ', 'スクリプト', '応対', 'オープニング,挨拶,電話'),
 ('DOC024', 'クロージングトーク例', '電話応対のクロージングトーク例です。\n\n【基本形】\n「本日は私、[名前]が承りました。他にご不明な点はございませんか？（確認後）お電話ありがとうございました。失礼いたします。」\n\n【手続き完了時】\n「お手続きは以上でございます。[手続き内容]につきましては、[期間]ほどお時間をいただきます。他にご質問はございますか？」\n\n【未解決時】\n「確認が取れ次第、[連絡方法]にてご連絡させていただきます。ご連絡先は[番号]でよろしいでしょうか。」\n\n【ポイント】\n- 必ず「他にご質問は」と確認\n- 担当者名を伝える\n- お礼を述べて終了', 'スクリプト', '応対', 'クロージング,終話,電話'),
 ('DOC025', '待ち時間アナウンス', '保留時のアナウンス例です。\n\n【短時間保留（1分以内）】\n「少々お待ちください。」\n（戻り）「お待たせいたしました。」\n\n【中程度保留（1-3分）】\n「確認いたしますので、少々お待ちいただけますでしょうか。」\n（戻り）「大変お待たせいたしました。」\n\n【長時間保留（3分以上見込み）】\n「確認にお時間がかかりますので、一度お電話を切らせていただき、確認でき次第ご連絡させていただいてもよろしいでしょうか。」\n\n【保留中の経過報告】\n（2分経過時）「もう少々お待ちください。確認中でございます。」\n\n【ポイント】\n- 保留は最大3分を目安\n- 長くなる場合は折り返し提案', 'スクリプト', '応対', '保留,待ち時間,アナウンス'),
 ('DOC026', '転送時の説明文', '電話転送時の説明文例です。\n\n【担当部署への転送】\n「詳しい担当にお繋ぎいたします。少々お待ちください。」\n（転送後）「お電話代わりました。[部署名]の[名前]でございます。」\n\n【SVへの転送】\n「責任者にお繋ぎいたします。少々お待ちください。」\n\n【転送できない場合】\n「申し訳ございません。ただいま担当が対応中でございます。折り返しお電話させていただいてもよろしいでしょうか。」\n\n【引き継ぎ事項】\n転送前に伝えること:\n- お客様名\n- 問い合わせ内容の概要\n- これまでの対応経緯\n\n【ポイント】\n- たらい回しにしない\n- 経緯を正確に引き継ぐ', 'スクリプト', '応対', '転送,引き継ぎ,電話'),
@@ -441,7 +441,7 @@ VALUES
 -- 5. Semantic View 作成
 -- =============================================================================
 CALL SYSTEM$CREATE_SEMANTIC_VIEW_FROM_YAML(
-  'SNOW_CALLCENTER.AI',
+  'SF_CALLCENTER.AI',
   $$
 name: SV_INQUIRY_ANALYSIS
 description: |
@@ -452,7 +452,7 @@ tables:
   - name: CUSTOMER
     description: コールセンターに問い合わせをする顧客情報
     base_table:
-      database: SNOW_CALLCENTER
+      database: SF_CALLCENTER
       schema: DATA
       table: DIM_CUSTOMER
     synonyms:
@@ -505,7 +505,7 @@ tables:
   - name: OPERATOR
     description: コールセンターのオペレーター情報
     base_table:
-      database: SNOW_CALLCENTER
+      database: SF_CALLCENTER
       schema: DATA
       table: DIM_OPERATOR
     synonyms:
@@ -535,7 +535,7 @@ tables:
   - name: CATEGORY
     description: 問い合わせカテゴリ情報
     base_table:
-      database: SNOW_CALLCENTER
+      database: SF_CALLCENTER
       schema: DATA
       table: DIM_INQUIRY_CATEGORY
     synonyms:
@@ -573,7 +573,7 @@ tables:
   - name: INQUIRY
     description: 顧客からの問い合わせ履歴
     base_table:
-      database: SNOW_CALLCENTER
+      database: SF_CALLCENTER
       schema: DATA
       table: FACT_INQUIRY
     synonyms:
@@ -658,7 +658,7 @@ tables:
   - name: TRANSCRIPT
     description: 通話テキストデータ（AmiVoice連携想定）
     base_table:
-      database: SNOW_CALLCENTER
+      database: SF_CALLCENTER
       schema: DATA
       table: FACT_CALL_TRANSCRIPT
     synonyms:
@@ -715,7 +715,7 @@ tables:
   - name: RPA_INSTRUCTION
     description: RPA処理指示データ
     base_table:
-      database: SNOW_CALLCENTER
+      database: SF_CALLCENTER
       schema: DATA
       table: FACT_RPA_INSTRUCTION
     synonyms:
@@ -884,10 +884,10 @@ $$
 -- =============================================================================
 -- 6. Cortex Search Service 作成
 -- =============================================================================
-CREATE OR REPLACE CORTEX SEARCH SERVICE SNOW_CALLCENTER.AI.CALLCENTER_DOCUMENTS_CSS
+CREATE OR REPLACE CORTEX SEARCH SERVICE SF_CALLCENTER.AI.CALLCENTER_DOCUMENTS_CSS
     ON CONTENT
     ATTRIBUTES TITLE, DOCUMENT_TYPE, CATEGORY
-    WAREHOUSE = SNOW_CALLCENTER_WH
+    WAREHOUSE = SF_CALLCENTER_WH
     TARGET_LAG = '1 hour'
     COMMENT = 'コールセンター業務ドキュメント（FAQ、マニュアル、スクリプト）検索サービス'
     AS (
@@ -899,14 +899,14 @@ CREATE OR REPLACE CORTEX SEARCH SERVICE SNOW_CALLCENTER.AI.CALLCENTER_DOCUMENTS_
             CATEGORY,
             KEYWORDS,
             VERSION
-        FROM SNOW_CALLCENTER.DATA.CALL_CENTER_DOCUMENT
+        FROM SF_CALLCENTER.DATA.CALL_CENTER_DOCUMENT
     );
 
 -- =============================================================================
 -- 7. Cortex Agent 作成
 -- =============================================================================
-CREATE OR REPLACE AGENT SNOW_CALLCENTER.AI.CALLCENTER_SUPPORT_AGENT
-  COMMENT = 'このエージェントはSnowBankコールセンターの業務支援エージェントです。顧客情報・問い合わせ履歴の分析、FAQ・マニュアルの検索に対応します。'
+CREATE OR REPLACE AGENT SF_CALLCENTER.AI.CALLCENTER_SUPPORT_AGENT
+  COMMENT = 'このエージェントはSFBankコールセンターの業務支援エージェントです。顧客情報・問い合わせ履歴の分析、FAQ・マニュアルの検索に対応します。'
   PROFILE = '{"display_name": "Call Center Support Agent"}'
   FROM SPECIFICATION
 $$
@@ -929,7 +929,7 @@ instructions:
        - 生の個人情報は表示しない
     5. 免責事項：
        - 回答の末尾に以下を記載
-       - "【免責事項】本回答はSnowflake CoWorkによるデモンストレーション目的で生成されたものです。SnowBankは架空の金融機関であり、表示されるデータはすべてサンプルデータです。"
+       - "【免責事項】本回答はSnowflake CoWorkによるデモンストレーション目的で生成されたものです。SFBankは架空の金融機関であり、表示されるデータはすべてサンプルデータです。"
   orchestration: |
     1. ユーザーからの質問を受け取り、質問の意図を分析する
     2. 質問の内容に応じて、適切なツールを選択：
@@ -964,36 +964,36 @@ tools:
 
 tool_resources:
   CustomerAnalyst:
-    semantic_view: "SNOW_CALLCENTER.AI.SV_INQUIRY_ANALYSIS"
+    semantic_view: "SF_CALLCENTER.AI.SV_INQUIRY_ANALYSIS"
   DocumentSearch:
-    name: "SNOW_CALLCENTER.AI.CALLCENTER_DOCUMENTS_CSS"
+    name: "SF_CALLCENTER.AI.CALLCENTER_DOCUMENTS_CSS"
     max_results: "5"
 $$;
 
 -- =============================================================================
 -- 8. 検証
 -- =============================================================================
-SELECT 'DIM_CUSTOMER' AS TABLE_NAME, COUNT(*) AS ROW_COUNT FROM SNOW_CALLCENTER.DATA.DIM_CUSTOMER
-UNION ALL SELECT 'DIM_PRODUCT', COUNT(*) FROM SNOW_CALLCENTER.DATA.DIM_PRODUCT
-UNION ALL SELECT 'DIM_OPERATOR', COUNT(*) FROM SNOW_CALLCENTER.DATA.DIM_OPERATOR
-UNION ALL SELECT 'DIM_INQUIRY_CATEGORY', COUNT(*) FROM SNOW_CALLCENTER.DATA.DIM_INQUIRY_CATEGORY
-UNION ALL SELECT 'FACT_INQUIRY', COUNT(*) FROM SNOW_CALLCENTER.DATA.FACT_INQUIRY
-UNION ALL SELECT 'FACT_CALL_TRANSCRIPT', COUNT(*) FROM SNOW_CALLCENTER.DATA.FACT_CALL_TRANSCRIPT
-UNION ALL SELECT 'FACT_RPA_INSTRUCTION', COUNT(*) FROM SNOW_CALLCENTER.DATA.FACT_RPA_INSTRUCTION
-UNION ALL SELECT 'CALL_CENTER_DOCUMENT', COUNT(*) FROM SNOW_CALLCENTER.DATA.CALL_CENTER_DOCUMENT;
+SELECT 'DIM_CUSTOMER' AS TABLE_NAME, COUNT(*) AS ROW_COUNT FROM SF_CALLCENTER.DATA.DIM_CUSTOMER
+UNION ALL SELECT 'DIM_PRODUCT', COUNT(*) FROM SF_CALLCENTER.DATA.DIM_PRODUCT
+UNION ALL SELECT 'DIM_OPERATOR', COUNT(*) FROM SF_CALLCENTER.DATA.DIM_OPERATOR
+UNION ALL SELECT 'DIM_INQUIRY_CATEGORY', COUNT(*) FROM SF_CALLCENTER.DATA.DIM_INQUIRY_CATEGORY
+UNION ALL SELECT 'FACT_INQUIRY', COUNT(*) FROM SF_CALLCENTER.DATA.FACT_INQUIRY
+UNION ALL SELECT 'FACT_CALL_TRANSCRIPT', COUNT(*) FROM SF_CALLCENTER.DATA.FACT_CALL_TRANSCRIPT
+UNION ALL SELECT 'FACT_RPA_INSTRUCTION', COUNT(*) FROM SF_CALLCENTER.DATA.FACT_RPA_INSTRUCTION
+UNION ALL SELECT 'CALL_CENTER_DOCUMENT', COUNT(*) FROM SF_CALLCENTER.DATA.CALL_CENTER_DOCUMENT;
 
-SHOW SEMANTIC VIEWS IN SCHEMA SNOW_CALLCENTER.AI;
-SHOW CORTEX SEARCH SERVICES IN SCHEMA SNOW_CALLCENTER.AI;
-SHOW AGENTS IN SCHEMA SNOW_CALLCENTER.AI;
+SHOW SEMANTIC VIEWS IN SCHEMA SF_CALLCENTER.AI;
+SHOW CORTEX SEARCH SERVICES IN SCHEMA SF_CALLCENTER.AI;
+SHOW AGENTS IN SCHEMA SF_CALLCENTER.AI;
 
 -- =============================================================================
 -- 9. 権限付与（必要に応じてコメント解除）
 -- =============================================================================
 -- SET TARGET_ROLE = 'CALLCENTER_USER';
--- GRANT USAGE ON DATABASE SNOW_CALLCENTER TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT USAGE ON SCHEMA SNOW_CALLCENTER.DATA TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT USAGE ON SCHEMA SNOW_CALLCENTER.AI TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT SELECT ON ALL TABLES IN SCHEMA SNOW_CALLCENTER.DATA TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT SELECT ON ALL SEMANTIC VIEWS IN SCHEMA SNOW_CALLCENTER.AI TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT USAGE ON CORTEX SEARCH SERVICE SNOW_CALLCENTER.AI.CALLCENTER_DOCUMENTS_CSS TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT USAGE ON AGENT SNOW_CALLCENTER.AI.CALLCENTER_SUPPORT_AGENT TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT USAGE ON DATABASE SF_CALLCENTER TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT USAGE ON SCHEMA SF_CALLCENTER.DATA TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT USAGE ON SCHEMA SF_CALLCENTER.AI TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT SELECT ON ALL TABLES IN SCHEMA SF_CALLCENTER.DATA TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT SELECT ON ALL SEMANTIC VIEWS IN SCHEMA SF_CALLCENTER.AI TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT USAGE ON CORTEX SEARCH SERVICE SF_CALLCENTER.AI.CALLCENTER_DOCUMENTS_CSS TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT USAGE ON AGENT SF_CALLCENTER.AI.CALLCENTER_SUPPORT_AGENT TO ROLE IDENTIFIER($TARGET_ROLE);

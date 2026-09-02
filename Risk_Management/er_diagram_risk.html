@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SnowBank リスク管理 ER図</title>
+    <title>SFBank リスク管理 ER図</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
         body {
@@ -121,7 +121,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>📊 SnowBank リスク管理</h1>
+        <h1>📊 SFBank リスク管理</h1>
         <h2>Entity Relationship Diagram</h2>
         
         <div class="mermaid">
@@ -260,7 +260,7 @@ flowchart LR
         B[(情報系<br/>格付・担保)]
     end
     
-    subgraph Snowflake SNOW_RISK
+    subgraph Snowflake SF_RISK
         subgraph DATA Schema
             C[(FACT_LOAN_DETAIL<br/>貸出明細)]
             D[(FACT_INTERNAL_RISK<br/>内部リスク)]

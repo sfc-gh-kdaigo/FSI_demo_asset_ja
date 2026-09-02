@@ -1,5 +1,5 @@
 -- =====================================================
--- SNOWCREDIT 環境構築
+-- SFCREDIT 環境構築
 -- =====================================================
 
 -- =============================================================================
@@ -7,23 +7,23 @@
 -- =============================================================================
 USE ROLE ACCOUNTADMIN;
 
-CREATE WAREHOUSE IF NOT EXISTS SNOW_CREDIT_WH
+CREATE WAREHOUSE IF NOT EXISTS SF_CREDIT_WH
     WAREHOUSE_SIZE = 'XSMALL'
     AUTO_SUSPEND = 60
     AUTO_RESUME = TRUE
     INITIALLY_SUSPENDED = TRUE
-    COMMENT = 'SnowCredit デモ用ウェアハウス';
+    COMMENT = 'SFCredit デモ用ウェアハウス';
 
-USE WAREHOUSE SNOW_CREDIT_WH;
+USE WAREHOUSE SF_CREDIT_WH;
 
 -- =============================================================================
 -- 2. データベース・スキーマ作成
 -- =============================================================================
-CREATE DATABASE IF NOT EXISTS SNOW_CREDIT;
-CREATE SCHEMA IF NOT EXISTS SNOW_CREDIT.DATA;
-CREATE SCHEMA IF NOT EXISTS SNOW_CREDIT.AI;
+CREATE DATABASE IF NOT EXISTS SF_CREDIT;
+CREATE SCHEMA IF NOT EXISTS SF_CREDIT.DATA;
+CREATE SCHEMA IF NOT EXISTS SF_CREDIT.AI;
 
-USE DATABASE SNOW_CREDIT;
+USE DATABASE SF_CREDIT;
 USE SCHEMA DATA;
 
 -- =============================================================================
@@ -260,7 +260,7 @@ VALUES
 
 -- 4.1 SV_CUSTOMER_TRANSACTION（統合ビュー with Verified Queries）
 CALL SYSTEM$CREATE_SEMANTIC_VIEW_FROM_YAML(
-  'SNOW_CREDIT.AI',
+  'SF_CREDIT.AI',
   $$
 name: SV_CUSTOMER_TRANSACTION
 description: |
@@ -271,7 +271,7 @@ tables:
   - name: CUSTOMER
     description: クレジットカード会員の基本情報
     base_table:
-      database: SNOW_CREDIT
+      database: SF_CREDIT
       schema: DATA
       table: DIM_CUSTOMER
     synonyms:
@@ -356,7 +356,7 @@ tables:
   - name: TX
     description: クレジットカード取引データ
     base_table:
-      database: SNOW_CREDIT
+      database: SF_CREDIT
       schema: DATA
       table: FACT_TRANSACTION
     synonyms:
@@ -431,7 +431,7 @@ tables:
   - name: MERCHANT
     description: 加盟店マスタ
     base_table:
-      database: SNOW_CREDIT
+      database: SF_CREDIT
       schema: DATA
       table: DIM_MERCHANT
     synonyms:
@@ -540,7 +540,7 @@ $$
 
 -- 4.2 SV_CAMPAIGN_ANALYSIS（キャンペーン分析用ビュー）
 CALL SYSTEM$CREATE_SEMANTIC_VIEW_FROM_YAML(
-  'SNOW_CREDIT.AI',
+  'SF_CREDIT.AI',
   $$
 name: SV_CAMPAIGN_ANALYSIS
 description: |
@@ -551,7 +551,7 @@ tables:
   - name: CAMPAIGN
     description: マーケティングキャンペーン情報
     base_table:
-      database: SNOW_CREDIT
+      database: SF_CREDIT
       schema: DATA
       table: DIM_CAMPAIGN
     synonyms:
@@ -630,7 +630,7 @@ tables:
   - name: TX
     description: キャンペーン適用取引データ
     base_table:
-      database: SNOW_CREDIT
+      database: SF_CREDIT
       schema: DATA
       table: FACT_TRANSACTION
     synonyms:
@@ -698,7 +698,7 @@ tables:
   - name: CUSTOMER
     description: 顧客情報
     base_table:
-      database: SNOW_CREDIT
+      database: SF_CREDIT
       schema: DATA
       table: DIM_CUSTOMER
     synonyms:
@@ -726,7 +726,7 @@ tables:
   - name: MERCHANT
     description: 加盟店マスタ
     base_table:
-      database: SNOW_CREDIT
+      database: SF_CREDIT
       schema: DATA
       table: DIM_MERCHANT
     synonyms:
@@ -860,10 +860,10 @@ $$
 -- =============================================================================
 -- 6. Cortex Search Service 作成
 -- =============================================================================
-CREATE OR REPLACE CORTEX SEARCH SERVICE SNOW_CREDIT.AI.OPERATION_DOCUMENTS_CSS
+CREATE OR REPLACE CORTEX SEARCH SERVICE SF_CREDIT.AI.OPERATION_DOCUMENTS_CSS
     ON CONTENT
     ATTRIBUTES TITLE, DOCUMENT_TYPE, DEPARTMENT
-    WAREHOUSE = SNOW_CREDIT_WH
+    WAREHOUSE = SF_CREDIT_WH
     TARGET_LAG = '1 hour'
     COMMENT = '業務マニュアル・FAQ・規約などの運用ドキュメント検索サービス'
     AS (
@@ -874,13 +874,13 @@ CREATE OR REPLACE CORTEX SEARCH SERVICE SNOW_CREDIT.AI.OPERATION_DOCUMENTS_CSS
             DOCUMENT_TYPE,
             DEPARTMENT,
             VERSION
-        FROM SNOW_CREDIT.DATA.OPERATION_DOCUMENT
+        FROM SF_CREDIT.DATA.OPERATION_DOCUMENT
     );
 
 -- =============================================================================
 -- 7. Cortex Agent 作成
 -- =============================================================================
-CREATE OR REPLACE AGENT SNOW_CREDIT.AI.CREDIT_CARD_AGENT
+CREATE OR REPLACE AGENT SF_CREDIT.AI.CREDIT_CARD_AGENT
   COMMENT = 'このエージェントはクレジットカード業界における、お客さま情報・加盟店情報・キャンペーン情報・取引明細について熟知したエージェントです。業務マニュアルの情報も把握しており回答が可能です'
   PROFILE = '{"display_name": "Credit Card Agent"}'
   FROM SPECIFICATION
@@ -901,7 +901,7 @@ instructions:
        - 件数、金額、割合などの数値は適切なグラフで可視化することが望ましい
     4. 免責事項：
        - 回答の末尾に必ず以下の免責事項を記載すること
-       - "【免責事項】本回答はSnowflake CoWorkによるデモンストレーション目的で生成されたものです。実際の金融アドバイス、投資判断、または業務上の意思決定に使用しないでください。SnowCreditは架空のクレジットカード会社であり、表示されるデータはすべてサンプルデータです。"
+       - "【免責事項】本回答はSnowflake CoWorkによるデモンストレーション目的で生成されたものです。実際の金融アドバイス、投資判断、または業務上の意思決定に使用しないでください。SFCreditは架空のクレジットカード会社であり、表示されるデータはすべてサンプルデータです。"
   orchestration: |
     1. ユーザーからの質問を受け取り、質問の意図を分析する
     2. 質問の内容に応じて、適切なツールを選択：
@@ -974,36 +974,36 @@ tools:
 
 tool_resources:
   CustomerAnalyst:
-    semantic_view: "SNOW_CREDIT.AI.SV_CUSTOMER_TRANSACTION"
+    semantic_view: "SF_CREDIT.AI.SV_CUSTOMER_TRANSACTION"
   CampaignAnalyst:
-    semantic_view: "SNOW_CREDIT.AI.SV_CAMPAIGN_ANALYSIS"
+    semantic_view: "SF_CREDIT.AI.SV_CAMPAIGN_ANALYSIS"
   DocumentSearch:
-    name: "SNOW_CREDIT.AI.OPERATION_DOCUMENTS_CSS"
+    name: "SF_CREDIT.AI.OPERATION_DOCUMENTS_CSS"
     max_results: "5"
 $$;
 
 -- =============================================================================
 -- 8. 検証
 -- =============================================================================
-SELECT 'DIM_CUSTOMER' AS TABLE_NAME, COUNT(*) AS ROW_COUNT FROM SNOW_CREDIT.DATA.DIM_CUSTOMER
-UNION ALL SELECT 'DIM_MERCHANT', COUNT(*) FROM SNOW_CREDIT.DATA.DIM_MERCHANT
-UNION ALL SELECT 'DIM_CAMPAIGN', COUNT(*) FROM SNOW_CREDIT.DATA.DIM_CAMPAIGN
-UNION ALL SELECT 'FACT_TRANSACTION', COUNT(*) FROM SNOW_CREDIT.DATA.FACT_TRANSACTION
-UNION ALL SELECT 'OPERATION_DOCUMENT', COUNT(*) FROM SNOW_CREDIT.DATA.OPERATION_DOCUMENT;
+SELECT 'DIM_CUSTOMER' AS TABLE_NAME, COUNT(*) AS ROW_COUNT FROM SF_CREDIT.DATA.DIM_CUSTOMER
+UNION ALL SELECT 'DIM_MERCHANT', COUNT(*) FROM SF_CREDIT.DATA.DIM_MERCHANT
+UNION ALL SELECT 'DIM_CAMPAIGN', COUNT(*) FROM SF_CREDIT.DATA.DIM_CAMPAIGN
+UNION ALL SELECT 'FACT_TRANSACTION', COUNT(*) FROM SF_CREDIT.DATA.FACT_TRANSACTION
+UNION ALL SELECT 'OPERATION_DOCUMENT', COUNT(*) FROM SF_CREDIT.DATA.OPERATION_DOCUMENT;
 
 -- Semantic View確認（2つ：顧客取引分析 + キャンペーン分析）
-SHOW SEMANTIC VIEWS IN SCHEMA SNOW_CREDIT.AI;
-SHOW CORTEX SEARCH SERVICES IN SCHEMA SNOW_CREDIT.AI;
-SHOW AGENTS IN SCHEMA SNOW_CREDIT.AI;
+SHOW SEMANTIC VIEWS IN SCHEMA SF_CREDIT.AI;
+SHOW CORTEX SEARCH SERVICES IN SCHEMA SF_CREDIT.AI;
+SHOW AGENTS IN SCHEMA SF_CREDIT.AI;
 
 -- =============================================================================
 -- 9. 権限付与（必要に応じてコメント解除）
 -- =============================================================================
 -- SET TARGET_ROLE = 'DATA_ANALYST';
--- GRANT USAGE ON DATABASE SNOW_CREDIT TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT USAGE ON SCHEMA SNOW_CREDIT.DATA TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT USAGE ON SCHEMA SNOW_CREDIT.AI TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT SELECT ON ALL TABLES IN SCHEMA SNOW_CREDIT.DATA TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT SELECT ON ALL SEMANTIC VIEWS IN SCHEMA SNOW_CREDIT.AI TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT USAGE ON CORTEX SEARCH SERVICE SNOW_CREDIT.AI.OPERATION_DOCUMENTS_CSS TO ROLE IDENTIFIER($TARGET_ROLE);
--- GRANT USAGE ON AGENT SNOW_CREDIT.AI.CREDIT_CARD_AGENT TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT USAGE ON DATABASE SF_CREDIT TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT USAGE ON SCHEMA SF_CREDIT.DATA TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT USAGE ON SCHEMA SF_CREDIT.AI TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT SELECT ON ALL TABLES IN SCHEMA SF_CREDIT.DATA TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT SELECT ON ALL SEMANTIC VIEWS IN SCHEMA SF_CREDIT.AI TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT USAGE ON CORTEX SEARCH SERVICE SF_CREDIT.AI.OPERATION_DOCUMENTS_CSS TO ROLE IDENTIFIER($TARGET_ROLE);
+-- GRANT USAGE ON AGENT SF_CREDIT.AI.CREDIT_CARD_AGENT TO ROLE IDENTIFIER($TARGET_ROLE);

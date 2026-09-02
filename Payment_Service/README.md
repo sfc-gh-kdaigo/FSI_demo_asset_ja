@@ -1,6 +1,6 @@
-# 💳 SnowCredit - クレジットカード業界向け Snowflake CoWork デモ
+# 💳 SFCredit - クレジットカード業界向け Snowflake CoWork デモ
 
-架空のクレジットカード会社「SnowCredit」を題材にした Snowflake Cortex AI デモ環境
+架空のクレジットカード会社「SFCredit」を題材にした Snowflake Cortex AI デモ環境
 
 ---
 
@@ -155,7 +155,7 @@ DIM_MERCHANT ──┘
 ## 🗄️ データベース構成
 
 ```
-SNOW_CREDIT
+SF_CREDIT
 ├── DATA/           -- ビジネスデータ（テーブル）
 │   ├── DIM_CUSTOMER
 │   ├── DIM_MERCHANT
@@ -181,7 +181,7 @@ SNOW_CREDIT
 
 1. **Snowsight で SQL ワークシートを開く**
 
-2. **`snowcredit_setup.sql` の内容を実行**
+2. **`sfcredit_setup.sql` の内容を実行**
    - ロール・ウェアハウスの設定
    - データベース・スキーマの作成
    - テーブル作成・サンプルデータ投入
@@ -199,16 +199,16 @@ SNOW_CREDIT
 
 | ファイル名 | 内容 |
 |:---|:---|
-| `snowcredit_setup.sql` | 環境構築スクリプト（全9セクション） |
+| `sfcredit_setup.sql` | 環境構築スクリプト（全9セクション） |
 | `README.md` | 本ドキュメント |
-| `er_diagram_snowcredit.html` | ER図（ブラウザで表示可能） |
+| `er_diagram_sfcredit.html` | ER図（ブラウザで表示可能） |
 
-### 📋 snowcredit_setup.sql のセクション構成
+### 📋 sfcredit_setup.sql のセクション構成
 
 | セクション | 内容 |
 |:---|:---|
-| 1. ロール・ウェアハウス設定 | ACCOUNTADMIN、SNOW_CREDIT_WH 作成 |
-| 2. データベース・スキーマ作成 | SNOW_CREDIT.DATA、SNOW_CREDIT.AI |
+| 1. ロール・ウェアハウス設定 | ACCOUNTADMIN、SF_CREDIT_WH 作成 |
+| 2. データベース・スキーマ作成 | SF_CREDIT.DATA、SF_CREDIT.AI |
 | 3. テーブル作成（DDL） | 5テーブルの定義 |
 | 4. サンプルデータ投入 | 日本語サンプルデータ |
 | 5. Semantic View 作成 | SV_CUSTOMER_TRANSACTION（Verified Query 付き） |
@@ -223,10 +223,10 @@ SNOW_CREDIT
 
 | 項目 | 値 |
 |:---|:---|
-| **DATABASE** | `SNOW_CREDIT` |
+| **DATABASE** | `SF_CREDIT` |
 | **SCHEMA（データ）** | `DATA` |
 | **SCHEMA（AI）** | `AI` |
-| **WAREHOUSE** | `SNOW_CREDIT_WH` |
+| **WAREHOUSE** | `SF_CREDIT_WH` |
 | **ROLE** | `ACCOUNTADMIN` |
 
 ---
@@ -235,5 +235,5 @@ SNOW_CREDIT
 
 - 本アセットは**デモンストレーション目的**で作成されています
 - サンプルデータは全て架空のデータであり、実際の顧客情報は含まれていません
-- **SnowCredit** は架空のクレジットカード会社です
+- **SFCredit** は架空のクレジットカード会社です
 - Agent の回答には自動的に免責事項が付与されます
